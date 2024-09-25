@@ -12,6 +12,7 @@ declare(strict_types=1);
 
 namespace WebStone\Cache\IO;
 
+use Exception;
 use RuntimeException;
 use WebStone\Cache\IO\IODriverInterface;
 use WebStone\Stdlib\Classes\AutoInitialized;
@@ -43,8 +44,11 @@ class File extends AutoInitialized implements IODriverInterface
         }
 
         $data = FileHelper::readFile($file);
-
-        if (empty($data) || (($data = @unserialize(base64_decode($data))) == false)) {
+        try {
+            if (empty($data) || (($data = unserialize(base64_decode($data))) === false)) {
+                return false;
+            }
+        } catch (Exception $exception) {
             return false;
         }
 
